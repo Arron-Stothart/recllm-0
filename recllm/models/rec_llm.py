@@ -12,7 +12,7 @@ from ..prompts.templates import (
 class RecLLM(nn.Module):
     def __init__(
         self,
-        model_name: str = "meta-llama/Llama-2-7b-chat-hf",
+        model_name: str = "meta-llama/Llama-3-8b-chat-hf",
         device: str = "cuda" if torch.cuda.is_available() else "cpu"
     ):
         super().__init__()
