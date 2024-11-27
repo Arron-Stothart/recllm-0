@@ -1,4 +1,18 @@
-# RecLLM - Conversational YouTube Recommendations
+---
+title: RecLLM-HF
+emoji: 🎥
+colorFrom: blue
+colorTo: purple
+sdk: gradio
+sdk_version: "3.50.2"
+python_version: "3.10"
+app_file: recllm/app.py
+pinned: false
+---
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+
+# RecLLM-HF - Conversational YouTube Recommendations
 
 RecLLM is an AI-powered conversational YouTube recommendation engine that provides personalized video suggestions through natural language interaction.
 
@@ -9,28 +23,21 @@ RecLLM is an AI-powered conversational YouTube recommendation engine that provid
 - Integration with YouTube Data API
 - Beautiful web interface powered by Gradio
 
-## Deployment on Hugging Face Spaces
+## Usage
 
-1. Create a new Space on Hugging Face:
-   - Go to https://huggingface.co/spaces
-   - Click "Create new Space"
-   - Choose "Docker" as the SDK
-   - Set the Space hardware to "CPU" (or GPU if needed)
+Simply type your interests or what kind of videos you're looking for in the chat interface. RecLLM will understand your preferences and provide personalized YouTube video recommendations with explanations.
 
-2. Configure environment variables:
-   - Add your `YOUTUBE_API_KEY` to the Space's secrets
-   - The app will automatically use this key for YouTube API requests
+Example prompts:
+- "I'm interested in learning about quantum computing"
+- "Show me some relaxing nature documentaries"
+- "Find me tutorials on Python machine learning"
 
-3. Upload the code:
-   ```bash
-   git clone https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME
-   # Copy your RecLLM files to the cloned directory
-   git add .
-   git commit -m "Initial commit"
-   git push
-   ```
+## Environment Variables
 
-4. The Space will automatically build and deploy your app
+This Space requires the following environment variable:
+- `YOUTUBE_API_KEY`: Your YouTube Data API key
+
+Add this to your Space's secrets in the Settings tab.
 
 ## Local Development
 
