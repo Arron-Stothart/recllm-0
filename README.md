@@ -4,7 +4,7 @@ emoji: 🎥
 colorFrom: blue
 colorTo: purple
 sdk: gradio
-sdk_version: "3.50.2"
+sdk_version: "5.6.0"
 python_version: "3.10"
 app_file: recllm/app.py
 pinned: false
