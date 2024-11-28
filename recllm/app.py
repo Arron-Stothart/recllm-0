@@ -5,8 +5,13 @@ from recllm.models.rec_llm import RecLLM
 from recllm.models.user_profile import UserProfile
 from recllm.utils.youtube_api import YouTubeAPI
 from dotenv import load_dotenv
+from huggingface_hub import login
+import os
 
 load_dotenv()
+
+# Login to Hugging Face
+login(token=os.getenv("HUGGING_FACE_HUB_TOKEN"))
 
 app = FastAPI()
 rec_llm = RecLLM()
