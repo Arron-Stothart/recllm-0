@@ -8,8 +8,15 @@ from dotenv import load_dotenv
 from huggingface_hub import login
 import os
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 
 load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Login to Hugging Face
 login(token=os.getenv("HUGGING_FACE_HUB_TOKEN"))
@@ -94,6 +101,7 @@ async def chat_endpoint(request: ConversationRequest) -> RecommendationResponse:
         )
 
     except Exception as e:
+        logger.error(f"Error in chat endpoint: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/feedback")
@@ -127,6 +135,7 @@ async def feedback_endpoint(
         return {"status": "success"}
         
     except Exception as e:
+        logger.error(f"Error in feedback endpoint: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
