@@ -2,8 +2,8 @@ from typing import List, Dict
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from recllm.models.rec_llm import RecLLM
-from recllm.models.user_profile import UserProfile
 from recllm.utils.youtube_api import YouTubeAPI
+from recllm.utils.profile_store import ProfileStore
 from dotenv import load_dotenv
 from huggingface_hub import login
 import os
@@ -17,8 +17,8 @@ app = FastAPI()
 rec_llm = RecLLM()
 youtube_api = YouTubeAPI()
 
-# Store user profiles in memory TODO: Gradio compatability
-user_profiles: Dict[str, UserProfile] = {}
+# Initialize profile store
+profile_store = ProfileStore()
 
 class Message(BaseModel):
     role: str
@@ -37,10 +37,8 @@ class RecommendationResponse(BaseModel):
 async def chat_endpoint(request: ConversationRequest) -> RecommendationResponse:
     """Handle chat messages and return personalised video recommendations."""
     try:
-        # Get or create user profile
-        if request.user_id not in user_profiles:
-            user_profiles[request.user_id] = UserProfile(request.user_id)
-        user_profile = user_profiles[request.user_id]
+        # Get or create user profile using profile store
+        user_profile = profile_store.get_profile(request.user_id)
 
         # Extract profile aspects relevant to current conversation context
         conversation_context = "\n".join(
@@ -76,6 +74,9 @@ async def chat_endpoint(request: ConversationRequest) -> RecommendationResponse:
         for video in ranked_videos[:3]:
             explanation += f"\n{video['title']}: {video['explanation']}"
 
+        # Save profile after updates
+        profile_store.save_profile(request.user_id, user_profile)
+        
         return RecommendationResponse(
             response=response,
             recommendations=ranked_videos[:5],
@@ -94,10 +95,8 @@ async def feedback_endpoint(
 ) -> Dict[str, str]:
     """Handle user feedback and update user profile accordingly."""
     try:
-        if user_id not in user_profiles:
-            raise HTTPException(status_code=404, detail="User not found")
+        user_profile = profile_store.get_profile(user_id)
         
-        user_profile = user_profiles[user_id]
         video_details = youtube_api.get_video_details(video_id)
         
         if video_details:
@@ -111,6 +110,9 @@ async def feedback_endpoint(
                 feedback_value,
                 rec_llm
             )
+            
+        # Save profile after updates
+        profile_store.save_profile(user_id, user_profile)
             
         return {"status": "success"}
         

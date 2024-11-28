@@ -102,8 +102,8 @@ class UserProfile:
         
         self.last_updated = datetime.now()
     
-    def to_dict(self) -> Dict:
-        """Convert profile to dictionary format."""
+    def to_dict(self) -> dict:
+        """Convert profile to dictionary for storage."""
         return {
             "user_id": self.user_id,
             "profile_description": self.profile_description,
@@ -111,17 +111,9 @@ class UserProfile:
             "last_updated": self.last_updated.isoformat()
         }
     
-    def save_to_file(self, filepath: str):
-        """Save profile to a JSON file."""
-        with open(filepath, 'w') as f:
-            json.dump(self.to_dict(), f, default=str)
-    
     @classmethod
-    def load_from_file(cls, filepath: str) -> 'UserProfile':
-        """Load profile from a JSON file."""
-        with open(filepath, 'r') as f:
-            data = json.load(f)
-        
+    def from_dict(cls, data: dict) -> "UserProfile":
+        """Create profile from dictionary."""
         profile = cls(data["user_id"])
         profile.profile_description = data["profile_description"]
         profile.watch_history = data["watch_history"]
