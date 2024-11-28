@@ -7,6 +7,7 @@ from recllm.utils.profile_store import ProfileStore
 from dotenv import load_dotenv
 from huggingface_hub import login
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -14,6 +15,15 @@ load_dotenv()
 login(token=os.getenv("HUGGING_FACE_HUB_TOKEN"))
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 rec_llm = RecLLM()
 youtube_api = YouTubeAPI()
 
@@ -118,6 +128,10 @@ async def feedback_endpoint(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/")
+async def root():
+    return {"message": "RecLLM API is running"}
 
 if __name__ == "__main__":
     import uvicorn

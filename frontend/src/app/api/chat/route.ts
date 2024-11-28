@@ -5,7 +5,9 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { message } = body
 
-    const response = await fetch('http://localhost:7860/api/chat', {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://10.20.26.107:7860'
+
+    const response = await fetch(`${API_URL}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
