@@ -3,12 +3,17 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { message } = body
+    const { message, conversationHistory = [] } = body
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://10.20.26.107:7860'
     
     const apiEndpoint = `${API_URL}/api/chat?__token=${process.env.HUGGING_FACE_HUB_TOKEN}`
     console.log('Attempting to fetch from:', apiEndpoint)
+
+    const messages = [
+      ...conversationHistory,
+      { role: 'user', content: message }
+    ]
 
     const response = await fetch(apiEndpoint, {
       method: 'POST',
@@ -18,7 +23,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         user_id: 'default_user',
-        messages: [{ role: 'user', content: message }]
+        messages: messages
       }),
     })
 

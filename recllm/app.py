@@ -1,6 +1,6 @@
 from typing import List, Dict
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from recllm.models.rec_llm import RecLLM
 from recllm.utils.youtube_api import YouTubeAPI
 from recllm.utils.profile_store import ProfileStore
@@ -41,6 +41,20 @@ class Message(BaseModel):
     role: str
     content: str
 
+    @field_validator('role')
+    @classmethod
+    def validate_role(cls, v: str) -> str:
+        if v not in ['user', 'assistant', 'system']:
+            raise ValueError('Role must be either user, assistant, or system')
+        return v
+
+    @field_validator('content')
+    @classmethod
+    def validate_content(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError('Content cannot be empty')
+        return v.strip()
+
 class ConversationRequest(BaseModel):
     user_id: str
     messages: List[Message]
@@ -66,9 +80,15 @@ async def chat_endpoint(request: ConversationRequest) -> RecommendationResponse:
             rec_llm
         )
 
+        # Convert Pydantic models to dictionaries for the LLM functions
+        messages_dict = [
+            {"role": msg.role, "content": msg.content}
+            for msg in request.messages
+        ]
+
         # Generate contextual search query
         search_query = rec_llm.generate_search_query(
-            request.messages,
+            messages_dict,
             relevant_profile
         )
         
@@ -82,7 +102,7 @@ async def chat_endpoint(request: ConversationRequest) -> RecommendationResponse:
 
         # Generate response
         response = rec_llm.generate_recommendation_response(
-            request.messages,
+            messages_dict,
             ranked_videos,
             relevant_profile
         )
