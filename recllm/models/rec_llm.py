@@ -8,20 +8,22 @@ from recllm.prompts.templates import (
     RANKING_PROMPT,
     RESPONSE_GENERATION_PROMPT
 )
+import logging
 
 class RecLLM(nn.Module):
     def __init__(
         self,
         model_name: str = "google/gemma-2-2b-it",
-        device: str = "cuda" if torch.cuda.is_available() else "cpu"
+        device: str = "cpu"
     ):
         super().__init__()
         self.device = device
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            device_map="auto",
-            torch_dtype=torch.float16
+            device_map=None,
+            torch_dtype=torch.float32,
+            low_cpu_mem_usage=True
         ).to(device)
         
     def generate_response(
@@ -31,30 +33,42 @@ class RecLLM(nn.Module):
         max_length: int = 512
     ) -> str:
         """Generate a response based on conversation history and user profile."""
-        conv_str = "\n".join([
-            f"{msg['role']}: {msg['content']}"
-            for msg in conversation_history[:-1]  # Exclude the last message
-        ])
-        
-        user_message = conversation_history[-1]["content"] if conversation_history else ""
-        
-        prompt = MAIN_CONVERSATION_PROMPT.format(
-            user_profile=str(user_profile or {}),
-            conversation_history=conv_str,
-            user_message=user_message
-        )
-        
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-        outputs = self.model.generate(
-            **inputs,
-            max_length=max_length,
-            num_return_sequences=1,
-            temperature=0.7,
-            do_sample=True
-        )
-        
-        response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return self._extract_response(response)
+        try:
+            conv_str = "\n".join([
+                f"{msg['role']}: {msg['content']}"
+                for msg in conversation_history[:-1]  # Exclude the last message
+            ])
+            
+            user_message = conversation_history[-1]["content"] if conversation_history else ""
+            
+            prompt = MAIN_CONVERSATION_PROMPT.format(
+                user_profile=str(user_profile or {}),
+                conversation_history=conv_str,
+                user_message=user_message
+            )
+            
+            inputs = self.tokenizer(
+                prompt,
+                return_tensors="pt",
+                truncation=True,
+                max_length=max_length
+            ).to(self.device)
+            
+            outputs = self.model.generate(
+                **inputs,
+                max_length=max_length,
+                num_return_sequences=1,
+                temperature=0.7,
+                do_sample=True,
+                pad_token_id=self.tokenizer.eos_token_id
+            )
+            
+            response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            return self._extract_response(response)
+            
+        except Exception as e:
+            logging.error(f"Error in generate_response: {str(e)}", exc_info=True)
+            return f"I apologize, but I encountered an error: {str(e)}"
     
     def generate_search_query(
         self,

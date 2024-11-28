@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-rec_llm = RecLLM()
+rec_llm = RecLLM(model_name="google/gemma-2b-it")
 youtube_api = YouTubeAPI()
 
 # Initialize profile store
