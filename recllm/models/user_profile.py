@@ -1,7 +1,7 @@
 from typing import List, Dict
 import json
 from datetime import datetime
-from ..prompts.templates import (
+from recllm.prompts.templates import (
     PREFERENCE_EXTRACTION_PROMPT,
     PROFILE_INTEGRATION_PROMPT,
     FEEDBACK_INTEGRATION_PROMPT,

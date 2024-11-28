@@ -1,8 +1,8 @@
 ---
 title: RecLLM-HF
-emoji: 🎥
+emoji: 🌌
 colorFrom: blue
-colorTo: purple
+colorTo: blue
 sdk: gradio
 sdk_version: "5.6.0"
 python_version: "3.10"

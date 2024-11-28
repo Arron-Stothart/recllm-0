@@ -1,8 +1,8 @@
 import gradio as gr
 from typing import List, Dict
-from .models.rec_llm import RecLLM
-from .models.user_profile import UserProfile
-from .utils.youtube_api import YouTubeAPI
+from recllm.models.rec_llm import RecLLM
+from recllm.models.user_profile import UserProfile
+from recllm.utils.youtube_api import YouTubeAPI
 from dotenv import load_dotenv
 
 load_dotenv()

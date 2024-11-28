@@ -2,7 +2,7 @@ from typing import List, Dict, Optional
 import torch
 import torch.nn as nn
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from ..prompts.templates import (
+from recllm.prompts.templates import (
     MAIN_CONVERSATION_PROMPT,
     SEARCH_QUERY_PROMPT,
     RANKING_PROMPT,
