@@ -3,11 +3,8 @@ title: RecLLM-HF
 emoji: 🌌
 colorFrom: blue
 colorTo: blue
-sdk: gradio
-sdk_version: "5.6.0"
-python_version: "3.10"
-app_file: recllm/app.py
-pinned: false
+sdk: docker
+app_port: 7860
 ---
 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
@@ -65,4 +62,29 @@ Add this to your Space's secrets in the Settings tab.
 
 ## License
 
-MIT License 
+MIT License
+
+# API Documentation
+
+The following REST API endpoints are available:
+
+### POST /api/chat
+Request body:
+```json
+{
+    "user_id": "string",
+    "messages": [
+        {
+            "role": "string",
+            "content": "string"
+        }
+    ]
+}
+```
+
+### POST /api/feedback
+Query parameters:
+- user_id: string
+- video_id: string
+- feedback_type: string
+- feedback_value: number 
