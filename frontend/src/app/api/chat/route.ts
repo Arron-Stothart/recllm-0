@@ -5,7 +5,6 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { message } = body
 
-    // Call the Flask backend
     const response = await fetch('http://localhost:7860/api/chat', {
       method: 'POST',
       headers: {
