@@ -12,13 +12,17 @@ from ..prompts.templates import (
 class RecLLM(nn.Module):
     def __init__(
         self,
-        model_name: str = "meta-llama/Llama-3.1-8B",
+        model_name: str = "google/gemma-2-9b-it",
         device: str = "cuda" if torch.cuda.is_available() else "cpu"
     ):
         super().__init__()
         self.device = device
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name).to(device)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            device_map="auto",
+            torch_dtype=torch.float16
+        ).to(device)
         
     def generate_response(
         self,
