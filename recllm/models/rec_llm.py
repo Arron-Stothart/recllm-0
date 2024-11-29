@@ -30,7 +30,7 @@ class RecLLM(nn.Module):
         self,
         conversation_history: List[Dict[str, str]],
         user_profile: Optional[Dict] = None,
-        max_length: int = 512
+        max_length: int = 1024
     ) -> str:
         """Generate a response based on conversation history and user profile."""
         try:
